@@ -19,6 +19,9 @@ struct MyModule : Module {
 		LIGHTS_LEN
 	};
 
+	float phase = 0.f;
+	float blinkPhase = 0.f;
+
 	MyModule() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(PITCH_PARAM, 0.f, 1.f, 0.f, "");
@@ -27,6 +30,29 @@ struct MyModule : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
+		// Compute the frequency from the pitch parameter and input
+		float pitch = params[PITCH_PARAM].getValue();
+		pitch += inputs[PITCH_INPUT].getVoltage();
+		pitch = clamp(pitch, -4.f, 4.f);
+		// The default pitch is C4 = 261.6256f
+		float freq = dsp::FREQ_C4 * std::pow(2.f, pitch);
+
+		// Accumulate the phase
+		phase += freq * args.sampleTime;
+		if (phase >= 0.5f)
+			phase -= 1.f;
+
+		// Compute the sine output
+		float sine = std::sin(2.f * M_PI * phase);
+		// Audio signals are typically +/-5V
+		// https://vcvrack.com/manual/VoltageStandards
+		outputs[SINE_OUTPUT].setVoltage(5.f * sine);
+
+		// Blink light at 1Hz
+		blinkPhase += args.sampleTime;
+		if (blinkPhase >= 1.f)
+			blinkPhase -= 1.f;
+		lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);
 	}
 };
 
