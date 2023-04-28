@@ -1,0 +1,23 @@
+{
+  "slug": "j-p",
+  "name": "MyPlugin",
+  "version": "2.0.0",
+  "license": "proprietary",
+  "brand": "j-p",
+  "author": "j-p",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "MyModule",
+      "name": "MyModule",
+      "description": "",
+      "tags": []
+    }
+  ]
+}
